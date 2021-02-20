@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+    <meta charset="utf-8" />
+    <title>This is my Server!</title>
+    <body>
+      <div id="container" >
+        <div class="myDiv">
+          <p> Draw a number from 0 to 9. I will try to guess the number</p>
+        </div>
+
+        <div class="myDiv">
+          <canvas id="draw" class="mycanvas" height="200" width="200"> </canvas>
+        </div>
+
+        <div class="myDiv">
+          <button class="button" onclick="getImage()">Press when done!</button>
+          <p id="ans">My Guess: </p>
+          <button class="button" onclick="clearCanvas()">Erase</button>
+        </div>
+        
+      </div>
+
+      <script>
+        let draw = false;
+        var c = document.getElementById("draw");
+        var ctx = c.getContext('2d', { alpha: false });
+        var x = 0;
+        var y = 0;
+
+        function canDraw(e) {
+          draw = true;
+          x = e.offsetX;
+          y = e.offsetY;
+        }
+
+        function cantDraw() {
+          draw = false;
+        }
+
+        myCanvas = document.getElementById("draw");
+        myCanvas.addEventListener("mousedown", canDraw, false);
+        myCanvas.addEventListener("mouseup", cantDraw, false);
+        myCanvas.addEventListener("mousemove", drawLine, false);
+        
+        function clearCanvas() {
+          ctx.fillStyle = 'rgb(0,0,0)'
+          ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+          document.getElementById("ans").innerText = 'My Guess: '
+        }
+
+        clearCanvas();
+
+        function drawLine(e) {
+          if (!draw) {
+            return;
+          }
+
+          x2 = e.offsetX;
+          y2 = e.offsetY;
+
+          ctx.strokeStyle = 'rgb(255,255,255)';
+          ctx.lineWidth = 15;
+          a = [-2,-1, 0, 1,2];
+          b = [-2,-1, 0, 1,2];
+
+          for (i = 0; i < a.length; i++) {
+            for (j = 0; j < b.length; j++) {
+              ctx.beginPath();
+              ctx.moveTo(x + a[i], y + b[j]);
+              ctx.lineTo(x2 + a[i], y2 + b[j]);
+              ctx.stroke();
+            }
+          }
+
+          x = x2;
+          y = y2;
+        }
+
+        function getImage() {
+          txt=document.getElementById("ans").innerText
+          document.getElementById("ans").innerText = txt+' Working...'
+          let img_data = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height)
+            .data;
+
+          postData("http://localhost:8080", img_data).then((data) => {
+            document.getElementById("ans").innerText = data.toString();
+          });
+
+          console.log("Sending image....");
+        }
+
+        // Example POST method implementation:
+        async function postData(url = "", data = {}) {
+          // Default options are marked with *
+          const response = await fetch(url, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+              "Content-Type": "application/json",
+              // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+          });
+          return response.text(); // parses JSON response into native JavaScript objects
+        }
+      </script>
+    </body>
+  </head>
+</html>
