@@ -6,6 +6,9 @@
     <meta charset="utf-8" />
     <title>This is my Server!</title>
     <body>
+      <h1 id='header' onclick='ChangeColor()'>
+        Guess My Number!
+      </h1>
       <div id="container" >
         <div class="myDiv">
           <p> Draw a number from 0 to 9. I will try to guess the number</p>
@@ -14,11 +17,15 @@
         <div class="myDiv">
           <canvas id="draw" class="mycanvas" height="200" width="200"> </canvas>
         </div>
+        <div>
+          <button onclick="getImage()">Guess!</button>
+          <button onclick="clearCanvas()">Erase</button>
+        </div>
 
         <div class="myDiv">
-          <button class="button" onclick="getImage()">Press when done!</button>
+         
           <p id="ans">My Guess: </p>
-          <button class="button" onclick="clearCanvas()">Erase</button>
+          
         </div>
         
       </div>
@@ -44,6 +51,7 @@
         myCanvas.addEventListener("mousedown", canDraw, false);
         myCanvas.addEventListener("mouseup", cantDraw, false);
         myCanvas.addEventListener("mousemove", drawLine, false);
+        myCanvas.addEventListener('mouseleave',cantDraw,false)
         
         function clearCanvas() {
           ctx.fillStyle = 'rgb(0,0,0)'
@@ -63,8 +71,8 @@
 
           ctx.strokeStyle = 'rgb(255,255,255)';
           ctx.lineWidth = 15;
-          a = [-2,-1, 0, 1,2];
-          b = [-2,-1, 0, 1,2];
+          a = [-3,-2,-1, 0, 1,2,3];
+          b = [-3,-2,-1, 0, 1,2,3];;
 
           for (i = 0; i < a.length; i++) {
             for (j = 0; j < b.length; j++) {
@@ -81,7 +89,7 @@
 
         function getImage() {
           txt=document.getElementById("ans").innerText
-          document.getElementById("ans").innerText = txt+' Working...'
+          document.getElementById("ans").innerText = 'Working...'
           let img_data = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height)
             .data;
 
@@ -92,6 +100,11 @@
           console.log("Sending image....");
         }
 
+        function ChangeColor(){
+          document.getElementById('header').style.color='#'+(Math.random()*0xFFFFFF<<0).toString(16);
+
+        }
+          ChangeColor()
         // Example POST method implementation:
         async function postData(url = "", data = {}) {
           // Default options are marked with *
