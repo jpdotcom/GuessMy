@@ -65,8 +65,8 @@
           y2 = e.offsetY;
 
           ctx.strokeStyle = "rgb(255,255,255)";
-          ctx.lineWidth = 15;
-          a = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
+          ctx.lineWidth = 3;
+          a = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
           b = a;
 
           for (i = 0; i < a.length; i++) {
@@ -83,13 +83,19 @@
         }
 
         function getImage() {
+          var t0 = performance.now();
+
           txt = document.getElementById("ans").innerText;
           document.getElementById("ans").innerText = "Working...";
           let img_data = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height)
             .data;
-
+          clearCanvas();
           postData("http://localhost:8080", img_data).then((data) => {
-            document.getElementById("ans").innerText = data.toString();
+            document.getElementById("ans").innerText =
+              data.toString() +
+              ". Time taken: " +
+              (Math.round(performance.now() - t0) / 1000).toString() +
+              " seconds";
           });
 
           console.log("Sending image....");
