@@ -3,14 +3,15 @@ import os
 import tensorflow as tf
 import numpy as np
 import time
-
-np.set_printoptions(suppress=True)
-path = "training_1"
-s=os.path.dirname(path)
-loaded_model=tf.keras.models.load_model(s)
 import json
+np.set_printoptions(suppress=True)
+path = "training_2"
+s=os.path.dirname(os.path.abspath('TrainingModel1_saved'))+"\TrainingModel1_saved"
 
-def translate(img,save=False):
+loaded_model=tf.keras.models.load_model(s)
+
+
+def translate(img):
     origin=(13,13)
     img=img.tolist()
     new_img=[[0 for j in range(28)] for i in range(28)]
@@ -50,22 +51,38 @@ def translate(img,save=False):
             if max(pix,up,down,left,right)<0:
                 new_img[i][j]=0
     s=np.array(new_img,dtype='uint8')
-    if save:
-        Image.fromarray(s).save('t.jpg')
+    
    
-    return s/255
+    return s
+def reflect(img):
 
+    
+    return (255-img) if img[0][0]>100 else img
+   
+    
+    
+   
 def predict(img):
     
 
     img=json.loads(img)
     img=list(img.values())
-    img=Image.fromarray(np.array(img,dtype='uint8').reshape(200,200,4)).resize((28,28)).convert('L')
+    n=len(img)
+
+    img=Image.fromarray(np.array(img,dtype='uint8').reshape(200,int(n/(200*4)),4)).resize((28,28)).convert('L')
     
-    img=np.array(img)
-  
-    img=translate(img).reshape(1,28,28,1)
+    img=translate(np.array(img))
+    
+   
+    Image.fromarray(img).save('final.jpg')
+    img=img/255
+    img=img.reshape(1,28,28,1)
+    
+    
     results = loaded_model.predict(img)
+
+    
+               
     return "The number is " + str(np.argmax(results))
 
 

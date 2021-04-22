@@ -3,7 +3,26 @@ body {
   height: 100%;
   width: 100%;
 }
-button {
+h1 {
+  user-select: none; /* Non-prefixed version, currently
+                        supported by Chrome, Edge, Opera and Firefox */
+}
+button,
+input {
+  background-color: rgb(9, 59, 160); /* Green */
+  border: none;
+  color: white;
+
+  text-align: center;
+  text-decoration: none;
+
+  font-size: 10px;
+  cursor: pointer;
+  height: 50px;
+  width: 100px;
+}
+
+form {
   background-color: rgb(9, 59, 160); /* Green */
   border: none;
   color: white;

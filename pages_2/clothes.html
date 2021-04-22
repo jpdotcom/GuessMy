@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <link rel="stylesheet" href="clothes.css" />
+    <meta charset="utf-8" />
+    <title>This is my Server!</title>
+    <body>
+      <h1 id="header" onclick="ChangeColor()">Guess The Clothing!</h1>
+      <div id="container">
+        <input type="file" style="display: none" id="myFile" />
+
+        <div>
+          <button onclick="ChangeFile()">Insert File</button>
+        </div>
+        <div id="changeImage">
+          <p id="display_location">Image will be Displayed Here!</p>
+        </div>
+        <div>
+          <button onclick="getImage()">Guess!</button>
+        </div>
+        <div>
+          <p id="ans">My Guess:</p>
+        </div>
+      </div>
+
+      <script>
+        function ChangeFile() {
+          document.getElementById("myFile").click();
+        }
+
+        function ChangeColor() {
+          document.getElementById("header").style.color =
+            "#" + ((Math.random() * 0xffffff) << 0).toString(16);
+        }
+        const fileSelector = document.getElementById("myFile");
+
+        ChangeColor();
+
+        fileSelector.addEventListener("change", (e) => {
+          let fileList = e.target.files;
+
+          let reader = new FileReader();
+
+          reader.onload = function () {
+            var dataURL = reader.result;
+
+            var output = document.createElement("img");
+            var text = document.getElementById("display_location");
+            var curr_img = document.getElementById("myIMG");
+            var myDiv = document.getElementById("changeImage");
+            output.src = dataURL;
+            output.style.height = "200px";
+            output.id = "myIMG";
+            if (text != null) {
+              myDiv.removeChild(text);
+            }
+            if (curr_img != null) {
+              myDiv.removeChild(curr_img);
+            }
+            myDiv.append(output);
+
+            output.style.border = "5px teal solid";
+            document.getElementById("ans").innerText = "My Guess:";
+          };
+
+          reader.readAsDataURL(fileList[0]);
+        });
+
+        function getImage() {
+          var t0 = performance.now();
+
+          var c = document.createElement("canvas");
+
+          var ctx = c.getContext("2d");
+
+          var img = document.getElementById("myIMG");
+          c.width = img.width;
+          c.height = img.height;
+
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+
+          let pixels = ctx.getImageData(0, 0, c.width, c.height).data;
+
+          postData("/getClothes", pixels).then((data) => {
+            document.getElementById("ans").innerText =
+              data.toString() +
+              ". Time taken: " +
+              (Math.round(performance.now() - t0) / 1000).toString() +
+              " seconds";
+          })
+          document.getElementById('ans').innerText='Working...';
+        }
+
+        // Example POST method implementation:
+        async function postData(url = "", data = {}) {
+          // Default options are marked with *
+          const response = await fetch(url, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+              "Content-Type": "application/json",
+              // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+          });
+          return response.text(); // parses JSON response into native JavaScript objects
+        }
+      </script>
+    </body>
+  </head>
+</html>

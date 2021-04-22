@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="numbers.css" />
     <meta charset="utf-8" />
     <title>This is my Server!</title>
     <body>
@@ -86,11 +86,11 @@
           var t0 = performance.now();
 
           txt = document.getElementById("ans").innerText;
-          document.getElementById("ans").innerText = "Working...";
+          
           let img_data = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height)
             .data;
           clearCanvas();
-          postData("http://localhost:8080", img_data).then((data) => {
+          postData("/getNumbers", img_data).then((data) => {
             document.getElementById("ans").innerText =
               data.toString() +
               ". Time taken: " +
@@ -99,6 +99,7 @@
           });
 
           console.log("Sending image....");
+          document.getElementById("ans").innerText = "Working...";
         }
 
         function ChangeColor() {
